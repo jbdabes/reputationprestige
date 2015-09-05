@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<product productid="tb_repprestige" active="1">
+	<title><![CDATA[[Thunderbolt] Reputation Prestige]]></title>
+	<description>Enables a reputation prestige system on vBulletin.</description>
+	<version>1.0.0</version>
+	<url>http://thunderbolt.tech</url>
+	<versioncheckurl />
+	<dependencies>
+	</dependencies>
+	<codes>
+		<code version="1.0.0">
+			<installcode><![CDATA[echo '<li><strong>Alter Table:</strong> <em>' . TABLE_PREFIX . 'user</em></li>';
+$vbulletin->db->query_write("ALTER TABLE `" . TABLE_PREFIX . "user` ADD `reputationprestige` INT(255) NOT NULL DEFAULT '0' AFTER `reputationlevelid`;");
+echo '<li><strong>Create Table:</strong> <em>' . TABLE_PREFIX . 'reputationprestige</em></li>';
+$vbulletin->db->query_write("CREATE TABLE `" . TABLE_PREFIX . "reputationprestige` ( `prestigeid` INT(255) NOT NULL AUTO_INCREMENT , `image` VARCHAR(255) NOT NULL , `startingrep` INT(255) NOT NULL , PRIMARY KEY (`prestigeid`) ) ENGINE = MyISAM;");
+echo '<li><strong>Table Insert:</strong> <em>Insert Default Data</em></li>';
+$vbulletin->db->query_write("INSERT INTO `" . TABLE_PREFIX . "reputationprestige` (`prestigeid`, `image`, `startingrep`) VALUES ('1', '/thunderbolt/repprestige/images/prestigeicons/1.png', '5000'), ('2', '/thunderbolt/repprestige/images/prestigeicons/2.png', '8000'), ('3', '/thunderbolt/repprestige/images/prestigeicons/3.png', '11000'), ('4', '/thunderbolt/repprestige/images/prestigeicons/4.png', '15000'), ('5', '/thunderbolt/repprestige/images/prestigeicons/5.png', '19000'), ('6', '/thunderbolt/repprestige/images/prestigeicons/6.png', '24000'), ('7', '/thunderbolt/repprestige/images/prestigeicons/7.png', '29000'), ('8', '/thunderbolt/repprestige/images/prestigeicons/8.png', '34000'), ('9', '/thunderbolt/repprestige/images/prestigeicons/9.png', '40000'), ('10', '/thunderbolt/repprestige/images/prestigeicons/10.png', '50000');");
+echo '<li><strong>Table Insert:</strong> <em>Default Data Inserted</em></li>';]]></installcode>
+			<uninstallcode><![CDATA[echo '<li><strong>Alter Table:</strong> <em>' . TABLE_PREFIX . 'user</em></li>';
+$vbulletin->db->query_write("ALTER TABLE `" . TABLE_PREFIX . "user` DROP `reputationprestige`;");
+echo '<li><strong>Drop Table:</strong> <em>' . TABLE_PREFIX . 'reputationprestige</em></li>';
+$vbulletin->db->query_write("DROP TABLE `" . TABLE_PREFIX . "reputationprestige`");]]></uninstallcode>
+		</code>
+	</codes>
+	<templates>
+		<template name="memberinfo_reputation_prestige" templatetype="template" date="1441230040" username="JB" version="1.0.0"><![CDATA[<img src="{vb:raw prepared.repprestigeicon}" title="Prestige {vb:raw prestigeid}" alt="Prestige {vb:raw prestigeid}">]]></template>
+		<template name="reputation_prestige" templatetype="template" date="1441226494" username="JB" version="1.0.0"><![CDATA[<img src="{vb:raw post.repprestigeicon}" title="Prestige {vb:raw prestigeid}" alt="Prestige {vb:raw prestigeid}">]]></template>
+		<template name="reputation_prestige_link" templatetype="template" date="1441230066" username="JB" version="1.0.0"><![CDATA[<li>
+    <ul class="blockrow">
+        <li class="<vb:if condition="$selectedcell == 'repprestige'">active<vb:else />inactive</vb:if>"><a href="profile.php?{vb:raw session.sessionurl}do=repprestige">Reputation Prestige</a></li>
+    </ul>
+</li>]]></template>
+		<template name="reputation_prestige_usercp" templatetype="template" date="1441414505" username="JB" version="1.0.0"><![CDATA[<h2 class="blockhead">Reputation Prestige</h2>
+<div class="blockbody formcontrols settings_form_border">
+    <div class="blockrow">
+        <vb:if condition="$bbuserinfo['reputationprestige'] > 0"><center><img src="{vb:raw bbuserinfo.repprestigeicon}" title="Prestige {vb:raw bbuserinfo.reputationprestige}" alt="Prestige {vb:raw bbuserinfo.reputationprestige}"></center></vb:if>
+        <p style="text-align: center; margin-top: 5px; font-size: 15px;">Your current reputation prestige level is <b>{vb:raw bbuserinfo.reputationprestige}</b></p>
+    </div>
+    <div class="blockrow">
+        <vb:if condition="$canprestige">
+            <p>You can prestige to Prestige {vb:raw nextprestige}!</p>
+            <button class="button" onclick="do_prestige();">Prestige to {vb:raw nextprestige}</button>
+        <vb:else />
+            <p><b>You cannot currently prestige any further.</b></p>
+        </vb:if>
+    </div>
+    <div class="blocksubhead">What is Reputation Prestige?</div>
+    <div class="blockrow">
+        <p>Reputation Prestige is a new way to use your reputation points around the community.</p>
+        <p style="margin-top: 20px;"><b>Perks of Prestiging</b></p>
+        <ul style="margin-left: 20px;">
+            <li style="list-style: disc outside none;">A reputation "reset" (it is not reset or removed, however the display is reset), meaning you can build your forum reputation again.</li>
+            <li style="list-style: disc outside none;">A cool emblem that displays on your profile and next to your posts.</li>
+            <li style="list-style: disc outside none;">A boost to your own reputation power - give or take more rep away at once.</li>
+            <li style="list-style: disc outside none;">Special bonuses for every prestige level.</li>
+        </ul>
+    </div>
+</div>
+
+<script type="text/javascript">
+    do_prestige = function()
+    {
+        var confirm_prestige = confirm('Are you sure you want to prestige? There is no going back!');
+        
+        if(confirm_prestige == true)
+        {
+            window.location.href = 'profile.php?do=repprestige&prestige={vb:raw nextprestige}';
+        }
+    }
+</script>]]></template>
+	</templates>
+	<stylevardfns>
+	</stylevardfns>
+	<stylevars>
+	</stylevars>
+	<plugins>
+		<plugin active="1" executionorder="5">
+			<title>Display max reputation boundary</title>
+			<hookname>fetch_userinfo</hookname>
+			<phpcode><![CDATA[require(DIR . '/thunderbolt/repprestige/hooks/fetch_userinfo.php');]]></phpcode>
+		</plugin>
+		<plugin active="1" executionorder="5">
+			<title>member_complete</title>
+			<hookname>member_complete</hookname>
+			<phpcode><![CDATA[require(DIR . '/thunderbolt/repprestige/hooks/member_complete.php');]]></phpcode>
+		</plugin>
+		<plugin active="1" executionorder="5">
+			<title>Fix postinfo</title>
+			<hookname>postbit_display_complete</hookname>
+			<phpcode><![CDATA[require(DIR . '/thunderbolt/repprestige/hooks/postbit_display_complete.php');]]></phpcode>
+		</plugin>
+		<plugin active="1" executionorder="5">
+			<title>profile_start</title>
+			<hookname>profile_start</hookname>
+			<phpcode><![CDATA[require(DIR . '/thunderbolt/repprestige/hooks/profile_start.php');]]></phpcode>
+		</plugin>
+		<plugin active="1" executionorder="5">
+			<title>usercp_nav_start</title>
+			<hookname>usercp_nav_start</hookname>
+			<phpcode><![CDATA[require(DIR . '/thunderbolt/repprestige/hooks/usercp_nav_start.php');]]></phpcode>
+		</plugin>
+	</plugins>
+	<phrases>
+	</phrases>
+	<options>
+	</options>
+	<helptopics>
+	</helptopics>
+	<cronentries>
+	</cronentries>
+	<faqentries>
+	</faqentries>
+	<navigation>
+	</navigation>
+</product>
